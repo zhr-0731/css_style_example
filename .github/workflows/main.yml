@@ -1,0 +1,50 @@
+name: Sync from GitCode
+
+on:
+  schedule:
+    # 每天0点执行 (UTC 时间)
+    - cron: '0 0 * * *'
+  # 允许手动触发
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+        with:
+          # 确保获取完整的提交历史，以便合并
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add GitCode remote
+        run: |
+          git remote add upstream https://gitcode.com/zhr-0731/css_style_example.git
+          git fetch upstream
+
+      - name: Merge changes from upstream
+        run: |
+          # 获取上游默认分支 (通常是 main 或 master)
+          UPSTREAM_BRANCH=$(git remote show upstream | grep 'HEAD branch' | cut -d' ' -f5)
+          echo "Upstream default branch: $UPSTREAM_BRANCH"
+          # 尝试合并，使用 theirs 策略解决冲突（上游优先）
+          # --allow-unrelated-histories 处理两个独立仓库的首次合并
+          git merge upstream/$UPSTREAM_BRANCH --allow-unrelated-histories \
+            --strategy-option theirs --no-edit || true
+          # 检查是否有冲突（理论上 theirs 策略不会留下未解决的冲突）
+          if git diff --quiet HEAD; then
+            echo "No changes to sync"
+          else
+            echo "Changes detected, committing merge"
+            git commit -m "chore: sync from upstream (GitCode) at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          fi
+
+      - name: Push changes to GitHub
+        run: git push origin HEAD:$(git rev-parse --abbrev-ref HEAD)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
