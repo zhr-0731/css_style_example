@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>输入框</title>
+    <!-- 没有任何样式，完全依赖浏览器默认样式 -->
+</head>
+<body>
+    <!-- 只带有输入框，无任何其他可见元素（如按钮、标签等） -->
+    <input type="text" id="messageInput" placeholder="输入文本后按回车发送" autofocus>
+
+    <script>
+        // 获取输入框元素
+        const inputElement = document.getElementById('messageInput');
+
+        // 监听键盘按键事件
+        inputElement.addEventListener('keydown', function(event) {
+            // 判断是否按下回车键，并且不在中文输入法的组合状态中（避免拼音选词时误触发）
+            if (event.key === 'Enter' && !event.isComposing) {
+                // 阻止可能的默认行为（例如某些环境下表单提交或换行，尽管没有form，但为了安全）
+                event.preventDefault();
+                
+                // 获取输入框当前文本
+                const inputText = inputElement.value;
+                
+                // 弹出消息提示，内容为输入的文本（可为空字符串）
+                alert(inputText);
+                
+                // 注意：根据需求不强制清空输入框，保留文本便于再次发送或修改
+                // 如需清空，可取消下一行注释
+                // inputElement.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
