@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>输入框</title>
+    <!-- 引用外部输入框样式（背景保留在HTML中） -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ---------- 背景与页面布局（保留在HTML中，不动） ---------- */
+        body {
+            margin: 0;
+            height: 100vh;
+            background-image: url('https://s41.ax1x.com/2026/06/19/pmGSz60.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            /* 让输入框垂直水平居中（布局相关，也保留在HTML） */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* 注意：输入框样式已全部移至 input-style.css，此处不再重复 */
+    </style>
+</head>
+<body>
+    <!-- 仅一个输入框，无其他元素 -->
+    <input type="text" id="messageInput" placeholder="输入文本后按回车发送" autofocus>
+
+    <script>
+        // 功能不变：按回车弹出输入的文本
+        const inputElement = document.getElementById('messageInput');
+        inputElement.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.isComposing) {
+                event.preventDefault();
+                const inputText = inputElement.value;
+                alert(inputText);
+                // 如需清空输入框，可取消下一行注释
+                // inputElement.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
